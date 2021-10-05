@@ -1,8 +1,7 @@
 pipeline {
     agent any
     tools {
-        maven 'maven'
-        jdk 'java'
+        maven 'maven3.8'
     }
     stages {
         stage ('Clone') {
@@ -13,7 +12,7 @@ pipeline {
         stage("build & SonarQube analysis") {
             agent any
             steps {
-              withSonarQubeEnv('sonar') {
+              withSonarQubeEnv('sonarserver') {
                 sh 'mvn clean package sonar:sonar'
               }
             }
@@ -40,22 +39,8 @@ pipeline {
                 }
             }
         }
-        stage ('Artifactory configuration') {
-            steps {
-                rtServer (
-                    id: "jfrog",
-                    url: jfrog,
-                    credentialsId: jfrog
-                )
-                rtPublishBuildInfo (
-                  serverId: "jfrog"
-                )
-             }
-         }
-        stage('Deliver') {
-            steps {
-                sh 'java -jar /var/jenkins_home/workspace/simple-java-maven-app/target/my-app-1.0-SNAPSHOT.jar'
-            }
-        }
-    }
+      
+          
+    
+     }
 }
